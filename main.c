@@ -21,6 +21,8 @@ lista_enc_t * read_data_file();
 
 void bubble_sort(lista_enc_t *string_list);
 
+int salvaArquivo (lista_enc_t *list,int numTarefas, int mmc);
+
 struct tarefas {
     int id;
     int  c;
@@ -29,6 +31,8 @@ struct tarefas {
 typedef struct tarefas tarefa_t;
 
 tarefa_t* task;
+
+enum TASK_STATE {P_STOPPED, P_RUNNING,P_READY, P_BLOCKED};
 
 
 int main(int argc, char** argv)
@@ -39,14 +43,18 @@ int main(int argc, char** argv)
    puts("Lista lida:");
    print_list(data_list);
     
+    int numTarefas = 10;
+    
+    int mmc = 30;
+   salvaAquivo(data_list,numTarefas,mmc);
      
 
 
    
-  //  puts("==================");
-   //  puts("Ordenada");
-  //  bubble_sort(data_list);
-   // print_list(data_list);
+    puts("==================");
+     puts("Ordenada");
+    bubble_sort(data_list);
+    print_list(data_list);
    // puts("==================");
    // print_list_back(data_list);
 
@@ -62,8 +70,8 @@ void bubble_sort(lista_enc_t *string_list)
     no_t *meu_no;
     no_t *pro_no;
 
-    char *data_a;
-    char *data_b;
+    tarefa_t *data_a;
+    tarefa_t *data_b;
 
     int i = 0;
 
@@ -82,7 +90,7 @@ void bubble_sort(lista_enc_t *string_list)
 
             printf("\ti: %d\n",i);
 
-            if (strcmp(data_b, data_a) < 0) {
+            if (data_b->t < data_a->t) {
                 puts("SWAP");
                 swap_list(string_list, meu_no, pro_no);
 
@@ -92,8 +100,8 @@ void bubble_sort(lista_enc_t *string_list)
             else
                 meu_no = pro_no;
 
-            printf("\t%s", data_a);
-            printf("\t%s", data_b);
+            printf("\t%d", data_a);
+            printf("\t%d", data_b);
 
             i++;
         }
@@ -254,4 +262,66 @@ lista_enc_t * read_data_file()
     fclose(fp);
 
     return list;
+}
+
+int salvaAquivo (lista_enc_t *list, int numTarefas, int mmc ){
+    
+            FILE *fp = NULL;
+    int i,j;
+    int T = 0;
+    int numT = 0;
+    int executeIn = 0;
+    int executeOut = 0;
+    
+    
+    fp = fopen("simuladorTarefasSaida.tex", "w");
+    
+    if (fp == NULL) {
+        fprintf(stderr, "read_data_file: Error opening file\n");
+        exit(EXIT_FAILURE);
+    }
+
+    
+    fprintf (fp, "\\documentclass[a4paper,10pt]{article}\n\\usepackage[utf8]{inputenc}\n\\usepackage[brazil]{babel}\n\n\\usepackage{listings}\n\\usepackage{listingsutf8}\n\\usepackage{rtsched}\n\n%%opening\n\\title{Diagrama de execução}\n\\author{Everaldo\\_1\\\
+                 \nJose Nicolau\\_2}\n\n\\begin{document}\n\n\\maketitle\n\n\\begin{figure}[h]\n\\centering %%Cria ambiente, tarefas, escala de tempo\n\n ");
+    
+          fprintf (fp, "\\begin{RTGrid}[nosymbols=1,width=10cm]{%d}{%d}\n\n",numTarefas + 1,mmc);
+          fprintf (fp, "\\RowLabel{1}{$\tau_1$}\n");
+          //for aqui//
+          //tarefa #
+    for (i= 0; i < (numTarefas + 1); i++){
+         // fprintf (fp, "tarefa %d\n\n",i);
+    for (j= 0; j < numTarefas; j++){
+        
+        fprintf (fp, "\\TaskArrDead{%d}{%d}{%d}\n",i,T,numT);}
+          //talvez outro for aqui//
+          // execução da tarefa
+        // fprintf (fp, "execução da tarefa %d\n\n", i);
+    
+    
+    for (j= 0; j < numTarefas; j++){
+    
+        
+        fprintf (fp, "\\TaskExecution{%d}{%d}{%d}\n",i,executeIn,executeOut);}
+    }
+          // Utilização do processador
+          fprintf (fp, "\\RowLabel{%d}{CPU}\n",numTarefas + 1);
+    
+          //outro for
+          fprintf (fp, "\\TaskExecution{%d}{%d}{%d}\n",numTarefas + 1, executeIn,executeOut);
+    
+    
+    //final do arquivo
+    fprintf (fp, "\\end{RTGrid}\n");
+    fprintf (fp, "\\caption{Exemplo de escalonamento para duas tarefas.}\n");
+    fprintf (fp, "\\label{fig:ex1}\n");
+    fprintf (fp ,"\\end{figure}\n");
+    fprintf (fp, "\\end{document}\n");
+             
+    fclose(fp);
+    system("pause");
+    return 0;
+             
+
+    
 }
