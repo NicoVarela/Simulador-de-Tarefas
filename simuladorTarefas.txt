@@ -1,0 +1,61 @@
+int salvaAquivo (lista_enc_t *list, int numTarefas, int mmc ){
+    
+            FILE *fp = NULL;
+    int i,j;
+    int T = 0;
+    int numT = 0;
+    int executeIn = 0;
+    int executeOut = 0;
+    
+    
+    fp = fopen("simuladorTarefasSaida.tex", "w");
+    
+    if (fp == NULL) {
+        fprintf(stderr, "read_data_file: Error opening file\n");
+        exit(EXIT_FAILURE);
+    }
+
+    
+    fprintf (fp, "\\documentclass[a4paper,10pt]{article}\n\\usepackage[utf8]{inputenc}\n\\usepackage[brazil]{babel}\n\n\\usepackage{listings}\n\\usepackage{listingsutf8}\n\\usepackage{rtsched}\n\n%%opening\n\\title{Diagrama de execução}\n\\author{Everaldo\\_1\\\
+                 \nJose Nicolau\\_2}\n\n\\begin{document}\n\n\\maketitle\n\n\\begin{figure}[h]\n\\centering %%Cria ambiente, tarefas, escala de tempo\n\n ");
+    
+          fprintf (fp, "\\begin{RTGrid}[nosymbols=1,width=10cm]{%d}{%d}\n\n",numTarefas + 1,mmc);
+          fprintf (fp, "\\RowLabel{1}{$\tau_1$}\n");
+          //for aqui//
+          //tarefa #
+    for (i= 0; i < (numTarefas + 1); i++){
+         // fprintf (fp, "tarefa %d\n\n",i);
+    for (j= 0; j < numTarefas; j++){
+        
+        fprintf (fp, "\\TaskArrDead{%d}{%d}{%d}\n",i,T,numT);}
+          //talvez outro for aqui//
+          // execução da tarefa
+        // fprintf (fp, "execução da tarefa %d\n\n", i);
+    
+    
+    for (j= 0; j < numTarefas; j++){
+    
+        
+        fprintf (fp, "\\TaskExecution{%d}{%d}{%d}\n",i,executeIn,executeOut);}
+    }
+          // Utilização do processador
+          fprintf (fp, "\\RowLabel{%d}{CPU}\n",numTarefas + 1);
+    
+          //outro for
+          fprintf (fp, "\\TaskExecution{%d}{%d}{%d}\n",numTarefas + 1, executeIn,executeOut);
+    
+    
+    //final do arquivo
+    fprintf (fp, "\\end{RTGrid}\n");
+    fprintf (fp, "\\caption{Exemplo de escalonamento para duas tarefas.}\n");
+    fprintf (fp, "\\label{fig:ex1}\n");
+    fprintf (fp ,"\\end{figure}\n");
+    fprintf (fp, "\\end{document}\n");
+             
+    fclose(fp);
+    system("pause");
+    return 0;
+             
+
+    
+}
